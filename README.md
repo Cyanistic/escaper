@@ -1,7 +1,7 @@
 # Escaper
 ## A simple CLI tool to escape and unescape URLs.
 ### Main Uses
-I created this to make command line/terminal web scraping easier, especially since I wanted to use (Google Translate)[https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=READER&tl=En-us] as a tts reader.
+I created this to make command line/terminal web scraping easier, especially since I wanted to use [Google Translate](https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&q=READER&tl=En-us) as a tts reader.
 ### Usage
 ```
 A program that escapes (or unescapes) special characters for URL sequences
