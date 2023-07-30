@@ -1,5 +1,4 @@
-use std::{collections::HashMap, process::exit, borrow::{BorrowMut}};
-
+use std::{collections::HashMap, process::exit};
 
 fn main() {
     let mut sequences: HashMap<char, String> = HashMap::from_iter([
@@ -30,8 +29,7 @@ fn main() {
         ('+', "%2B"),
         (',', "%2C")
     ].into_iter().map(|(key, val)| (key, val.to_string())));
-    const AVAILABLE_COMMANDS: [&str; 12] = [
-        "-n", "--no-newline",
+    const AVAILABLE_COMMANDS: [&str; 10] = [
         "-q", "--quotes",
         "-b", "--backticks",
         "-a", "--apostrophes",
@@ -96,22 +94,23 @@ fn print_help(){
     const BOLD: &str = "\x1b[1m";
     const UND: &str = "\x1b[4m";
     const RES: &str = "\x1b[0m";
-    println!("{}A program that escapes (or unescapes) special characters for URL sequences", BOLD);
+    println!("{}A program that escapes (or unescapes) special characters for URL sequences and prints the result to stdout.", BOLD);
     println!("{}Usage: escaper [OPTIONS] [SEQUENCES]{}", BOLD, RES);
     println!("{}-h, --help                          {}Print the help information.", BOLD, RES);
     println!("{} -                                  {}Reads SEQUENCES from stdin.", BOLD, RES);
-    println!("{}-s, --string                        {}Reads uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES);
+    println!("{}-s, --string                        {}Uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES);
     println!("{}-u, --undo                          {}Unescapes SEQUENCES.", BOLD, RES);
     println!("{}EXCLUSION OPTIONS:", BOLD);
-    println!("{}-a, --apostrophes                   {}Removes apostrophes from escapable character list", BOLD, RES);
-    println!("{}-b, --backticks                     {}Removes backticks from escapable character list", BOLD, RES);
-    println!("{}-q, --quotes                        {}Removes quotation marks from escapable character list", BOLD, RES);
+    println!("{}-a, --apostrophes                   {}Removes apostrophes from escapable character list.", BOLD, RES);
+    println!("{}-b, --backticks                     {}Removes backticks from escapable character list.", BOLD, RES);
+    println!("{}-q, --quotes                        {}Removes quotation marks from escapable character list.", BOLD, RES);
+    exit(0);
 }
 
 fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
     let mut result = String::new();
     for i in sequence.chars() {
-        result.push_str(sequences.get(&i).unwrap_or(&&i.to_string()));
+        result.push_str(sequences.get(&i).unwrap_or(&i.to_string()));
     }
     println!("{}", result)
 }
@@ -127,13 +126,11 @@ fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
         }
         if val != '%' && val != '$' {
             result.push(val);
+        }else if let Some(char) = sequences.get(&sequence.chars().skip(key).take(3).collect::<String>()){
+            result.push(*char);
+            count = 2;
         }else{
-            if let Some(char) = sequences.get(&sequence.chars().skip(key).take(3).collect::<String>()){
-                result.push(*char);
-                count = 2;
-            }else{
-                result.push(val);
-            }
+            result.push(val);
         }
     }
     println!("{}", result)
