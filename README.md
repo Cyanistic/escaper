@@ -16,4 +16,7 @@ EXCLUSION OPTIONS:
 -q, --quotes                        Removes quotation marks from escapable character list
 ```
 ### Building
-Escaper is a very simple program to build. A simple `cargo build -r` is all.
+Escaper is a very simple program to build. 
+```
+cargo build -r
+```

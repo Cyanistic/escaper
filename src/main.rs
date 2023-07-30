@@ -29,7 +29,7 @@ fn main() {
         ('\'',"%27"),
         ('+', "%2B"),
         (',', "%2C")
-    ].into_iter().map(|x| (x.0, x.1.to_string())));
+    ].into_iter().map(|(key, val)| (key, val.to_string())));
     const AVAILABLE_COMMANDS: [&str; 12] = [
         "-n", "--no-newline",
         "-q", "--quotes",
@@ -117,31 +117,23 @@ fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
 }
 
 fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
-    // let sequences: HashMap<&[u8], u8> = HashMap::from_iter(sequences.into_iter().map(|(key, val)| ((*val).as_bytes(), *key as u8)));
     let sequences: HashMap<&String, char> = HashMap::from_iter(sequences.into_iter().map(|(key, val)| (val, *key)));
     let mut result = String::new();
-    // for (key, val) in sequence.as_bytes().windows(3).enumerate() {
-    //     if let Some(char) = sequences.get(&val){
-    //         result.push(*char as char);
-    //     }
-    //     else {
-    //         if key == sequence.len() - 3{
-    //             result.push_str(std::str::from_utf8(val).unwrap());
-    //         }else{
-    //             result.push(sequence.as_bytes()[key] as char);
-    //         }
-    //     }
-    // }
     let mut count = 0;
     for (key, val) in sequence.chars().enumerate(){
-        if val != '%' && count < 1{
+        if count > 0{
+            count -= 1;
+            continue;
+        }
+        if val != '%' && val != '$' {
             result.push(val);
         }else{
             if let Some(char) = sequences.get(&sequence.chars().skip(key).take(3).collect::<String>()){
                 result.push(*char);
-                count = 3;
+                count = 2;
+            }else{
+                result.push(val);
             }
-            count -= 1;
         }
     }
     println!("{}", result)
