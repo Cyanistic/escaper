@@ -1,4 +1,5 @@
 use std::{collections::HashMap, process::exit};
+use std::io::{stdout, Write};
 
 fn main() {
     let mut sequences: HashMap<char, String> = HashMap::from_iter([
@@ -36,6 +37,8 @@ fn main() {
         "-u", "--undo",
         "-s", "--string",
     ];
+    // i don't know why i have to use 2 variables for this but it doesn't work if it try to
+    // condense it into one ¯\_(ツ)_/¯
     let args: Vec<String> = std::env::args().collect();
     let args: Vec<&str> = args.iter().map(|x| x.as_str()).collect();
     let mut undo = false;
@@ -49,7 +52,7 @@ fn main() {
                         'b' => {sequences.remove(&'`');},
                         'a' => {sequences.remove(&'\'');},
                         'u' => {undo = true},
-                        'h' => {print_help();},
+                        'h' => {print_help().expect("Couldn't write to stdout");},
                         's' => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
                          _  => {
                             eprintln!("Invalid argument: {}", i);
@@ -61,14 +64,14 @@ fn main() {
                 let lines = std::io::stdin().lines();
                 for line in lines {
                     if undo {
-                        undo_escape_sequence(&line.unwrap(), &sequences);
+                        undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
                     }else{
-                        escape_sequence(&line.unwrap(), &sequences);
+                        escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
                     }
                 }
             }else {
                 match i {
-                    "--help" => {print_help();},
+                    "--help" => {print_help().expect("Couldn't write to stdout");},
                     "--string" => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
                     "--quotes" => {sequences.remove(&'\"');},
                     "--backticks" => {sequences.remove(&'`');},
@@ -82,41 +85,42 @@ fn main() {
             }
         }else{
             if undo {
-                undo_escape_sequence(i, &sequences);
+                undo_escape_sequence(i, &sequences).expect("Couldn't write to stdout");
             }else{
-                escape_sequence(i, &sequences);
+                escape_sequence(i, &sequences).expect("Couldn't write to stdout");
             }
         }
     }
 }
 
-fn print_help(){
+fn print_help() -> Result<(), std::io::Error>{
     const BOLD: &str = "\x1b[1m";
     const UND: &str = "\x1b[4m";
     const RES: &str = "\x1b[0m";
-    println!("{}A program that escapes (or unescapes) special characters for URL sequences and prints the result to stdout.", BOLD);
-    println!("{}Usage: escaper [OPTIONS] [SEQUENCES]{}", BOLD, RES);
-    println!("{}-h, --help                          {}Print the help information.", BOLD, RES);
-    println!("{} -                                  {}Reads SEQUENCES from stdin.", BOLD, RES);
-    println!("{}-s, --string                        {}Uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES);
-    println!("{}-u, --undo                          {}Unescapes SEQUENCES.", BOLD, RES);
-    println!("{}EXCLUSION OPTIONS:", BOLD);
-    println!("{}-a, --apostrophes                   {}Removes apostrophes from escapable character list.", BOLD, RES);
-    println!("{}-b, --backticks                     {}Removes backticks from escapable character list.", BOLD, RES);
-    println!("{}-q, --quotes                        {}Removes quotation marks from escapable character list.", BOLD, RES);
+    writeln!(stdout(), "{}A program that escapes (or unescapes) special characters for URL sequences and prints the result to stdout.", BOLD)?;
+    writeln!(stdout(), "{}Usage: escaper [OPTIONS] [SEQUENCES]{}", BOLD, RES)?;
+    writeln!(stdout(), "  {}-h, --help                    {}Print the help information.", BOLD, RES)?;
+    writeln!(stdout(), "  {} -                            {}Reads SEQUENCES from stdin.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-s, --string                  {}Uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-u, --undo                    {}Unescapes SEQUENCES.", BOLD, RES)?;
+    writeln!(stdout(), "{}EXCLUSION OPTIONS:", BOLD)?;
+    writeln!(stdout(), "  {}-a, --apostrophes             {}Removes apostrophes from escapable character list.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-b, --backticks               {}Removes backticks from escapable character list.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-q, --quotes                  {}Removes quotation marks from escapable character list.", BOLD, RES)?;
     exit(0);
 }
 
-fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
+fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<(), std::io::Error>{
     let mut result = String::new();
     for i in sequence.chars() {
         result.push_str(sequences.get(&i).unwrap_or(&i.to_string()));
     }
-    println!("{}", result)
+    writeln!(stdout(), "{}", result)?;
+    Ok(())
 }
 
-fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
-    let sequences: HashMap<&String, char> = HashMap::from_iter(sequences.into_iter().map(|(key, val)| (val, *key)));
+fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<(), std::io::Error>{
+    let sequences: HashMap<&String, char> = HashMap::from_iter(sequences.iter().map(|(key, val)| (val, *key)));
     let mut result = String::new();
     let mut count = 0;
     for (key, val) in sequence.chars().enumerate(){
@@ -133,5 +137,7 @@ fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>){
             result.push(val);
         }
     }
-    println!("{}", result)
+    writeln!(stdout(), "{}", result)?;
+    Ok(())
 }
+
