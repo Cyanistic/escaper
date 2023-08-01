@@ -31,7 +31,7 @@ jobs:
       - name: Upload Release Assets (windows)
         id: upload-release-asset-windows
         uses: actions/upload-release-asset@v1
-        if: matrix.config.os == 'windows-latest'
+        if: ${{ matrix.config.os }} == 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -42,7 +42,7 @@ jobs:
       - name: Upload Release Assets (unix)
         id: upload-release-asset-unix
         uses: actions/upload-release-asset@v1
-        if: matrix.config.os != 'windows-latest'
+        if: ${{ matrix.platform.os }} != 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
