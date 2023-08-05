@@ -49,6 +49,7 @@ fn main() {
                     chars.next();
                     match chars.as_str() {
                         "help"        => {print_help().expect("Couldn't write to stdout");},
+                        "version"     => {writeln!(stdout(), "{}", env!("CARGO_PKG_VERSION")).expect("Couldn't write to stdout"); exit(0);},
                         "string"      => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
                         "regex"       => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
                         "quotes"      => {sequences.remove(&'\"');},
@@ -80,7 +81,7 @@ fn main() {
                             'a' => {sequences.remove(&'\'');},
                             'u' => {undo = true},
                             'h' => {print_help().expect("Couldn't write to stdout");},
-                            'V' => {print_help().expect("Couldn't write to stdout");},
+                            'V' => {writeln!(stdout(), "{}", env!("CARGO_PKG_VERSION")).expect("Couldn't write to stdout"); exit(0);},
                             's' => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
                             'r' => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
                              _  => {
