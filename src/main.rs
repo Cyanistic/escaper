@@ -45,47 +45,50 @@ fn main() {
     let mut undo = false;
     for i in args.into_iter().skip(1){
         let mut chars = i.chars();
-        if chars.next() == Some('-') {
-            if chars.clone().next().is_some_and(|x| x != '-'){
-                for char in chars{
-                    match char {
-                        'q' => {sequences.remove(&'\"');},
-                        'b' => {sequences.remove(&'`');},
-                        'a' => {sequences.remove(&'\'');},
-                        'u' => {undo = true},
-                        'h' => {print_help().expect("Couldn't write to stdout");},
-                        's' => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
-                        'r' => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
-                        
-                         _  => {
+        if chars.next().is_some_and(|x| x == '-') {
+            match chars.clone().next() {
+                Some('-') => {
+                    match i {
+                        "--help"        => {print_help().expect("Couldn't write to stdout");},
+                        "--string"      => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
+                        "--regex"       => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
+                        "--quotes"      => {sequences.remove(&'\"');},
+                        "--backticks"   => {sequences.remove(&'`');},
+                        "--apostrophes" => {sequences.remove(&'\'');},
+                        "--undo"        => {undo = true},
+                        _ => {
                             eprintln!("Invalid argument: {}", i);
                             exit(1);
                         }
                     }
-                }
-            }else if chars.next().is_none(){
-                let lines = std::io::stdin().lines();
-                for line in lines {
-                    if undo {
-                        undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
-                    }else{
-                        escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                },
+                None => {
+                    let lines = std::io::stdin().lines();
+                    for line in lines {
+                        if undo {
+                            undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                        }else{
+                            escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                        }
                     }
-                }
-            }else {
-                match i {
-                    "--help" => {print_help().expect("Couldn't write to stdout");},
-                    "--string" => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
-                    "--regex" => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
-                    "--quotes" => {sequences.remove(&'\"');},
-                    "--backticks" => {sequences.remove(&'`');},
-                    "--apostrophes" => {sequences.remove(&'\'');},
-                    "--undo" => {undo = true},
-                    _ => {
-                        eprintln!("Invalid argument: {}", i);
-                        exit(1);
+                },
+                Some(_) => {
+                    for char in chars{
+                        match char {
+                            'q' => {sequences.remove(&'\"');},
+                            'b' => {sequences.remove(&'`');},
+                            'a' => {sequences.remove(&'\'');},
+                            'u' => {undo = true},
+                            'h' => {print_help().expect("Couldn't write to stdout");},
+                            's' => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
+                            'r' => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
+                             _  => {
+                                eprintln!("Invalid argument: {}", i);
+                                exit(1);
+                            }
+                        }
                     }
-                }
+                },
             }
         }else{
             if undo {
