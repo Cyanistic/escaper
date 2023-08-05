@@ -101,12 +101,12 @@ fn print_help() -> Result<(), std::io::Error>{
     const BOLD: &str = "\x1b[1m";
     const UND: &str = "\x1b[4m";
     const RES: &str = "\x1b[0m";
-    writeln!(stdout(), "{}A program that escapes (or unescapes) special characters for URL sequences and prints the result to stdout.", BOLD)?;
+    writeln!(stdout(), "{}Escapes (or unescapes) special character sequences and prints the result to stdout.", BOLD)?;
     writeln!(stdout(), "{}Usage: escaper [OPTIONS] [SEQUENCES]{}", BOLD, RES)?;
     writeln!(stdout(), "  {}-h, --help                    {}Print the help information.", BOLD, RES)?;
     writeln!(stdout(), "  {} -                            {}Reads SEQUENCES from stdin.", BOLD, RES)?;
-    writeln!(stdout(), "  {}-s, --string                  {}Uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES)?;
-    writeln!(stdout(), "  {}-r, --regex                   {}Uses shell/regex (\\) escape sequences instead of default (%) escape sequences.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-s, --string                  {}Uses string ($) escape sequences instead of default URL (%) escape sequences.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-r, --regex                   {}Uses shell/regex (\\) escape sequences instead of default URL (%) escape sequences.", BOLD, RES)?;
     writeln!(stdout(), "  {}-u, --undo                    {}Unescapes SEQUENCES.", BOLD, RES)?;
     writeln!(stdout(), "{}EXCLUSION OPTIONS:", BOLD)?;
     writeln!(stdout(), "  {}-a, --apostrophes             {}Removes apostrophes from escapable character list.", BOLD, RES)?;
