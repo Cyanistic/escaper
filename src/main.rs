@@ -30,12 +30,13 @@ fn main() {
         ('+', "%2B"),
         (',', "%2C")
     ].into_iter().map(|(key, val)| (key, val.to_string())));
-    const AVAILABLE_COMMANDS: [&str; 10] = [
+    const AVAILABLE_COMMANDS: [&str; 12] = [
         "-q", "--quotes",
         "-b", "--backticks",
         "-a", "--apostrophes",
         "-u", "--undo",
         "-s", "--string",
+        "-r", "--regex",
     ];
     // i don't know why i have to use 2 variables for this but it doesn't work if it try to
     // condense it into one ¯\_(ツ)_/¯
@@ -54,6 +55,8 @@ fn main() {
                         'u' => {undo = true},
                         'h' => {print_help().expect("Couldn't write to stdout");},
                         's' => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
+                        'r' => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
+                        
                          _  => {
                             eprintln!("Invalid argument: {}", i);
                             exit(1);
@@ -73,6 +76,7 @@ fn main() {
                 match i {
                     "--help" => {print_help().expect("Couldn't write to stdout");},
                     "--string" => {sequences = sequences.into_iter().map(|(key, val)| (key, val.replace('%', "$"))).collect()},
+                    "--regex" => {sequences = sequences.into_keys().map(|key| (key, format!("\\{}", key).to_string())).collect()},
                     "--quotes" => {sequences.remove(&'\"');},
                     "--backticks" => {sequences.remove(&'`');},
                     "--apostrophes" => {sequences.remove(&'\'');},
@@ -102,6 +106,7 @@ fn print_help() -> Result<(), std::io::Error>{
     writeln!(stdout(), "  {}-h, --help                    {}Print the help information.", BOLD, RES)?;
     writeln!(stdout(), "  {} -                            {}Reads SEQUENCES from stdin.", BOLD, RES)?;
     writeln!(stdout(), "  {}-s, --string                  {}Uses string ($) escape sequences instead of default (%) escape sequences.", BOLD, RES)?;
+    writeln!(stdout(), "  {}-r, --regex                   {}Uses shell/regex (\\) escape sequences instead of default (%) escape sequences.", BOLD, RES)?;
     writeln!(stdout(), "  {}-u, --undo                    {}Unescapes SEQUENCES.", BOLD, RES)?;
     writeln!(stdout(), "{}EXCLUSION OPTIONS:", BOLD)?;
     writeln!(stdout(), "  {}-a, --apostrophes             {}Removes apostrophes from escapable character list.", BOLD, RES)?;
@@ -123,12 +128,13 @@ fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Re
     let sequences: HashMap<&String, char> = HashMap::from_iter(sequences.iter().map(|(key, val)| (val, *key)));
     let mut result = String::new();
     let mut count = 0;
+    let start = sequences.keys().next().unwrap().chars().next().unwrap();
     for (key, val) in sequence.chars().enumerate(){
         if count > 0{
             count -= 1;
             continue;
         }
-        if val != '%' && val != '$' {
+        if val != start{
             result.push(val);
         }else if let Some(char) = sequences.get(&sequence.chars().skip(key).take(3).collect::<String>()){
             result.push(*char);
