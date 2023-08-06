@@ -55,6 +55,7 @@ fn main() -> Result<(), std::io::Error>{
                         "quotes"      => {sequences.remove(&'\"');},
                         "backticks"   => {sequences.remove(&'`');},
                         "apostrophes" => {sequences.remove(&'\'');},
+                        "new-line"    => {sequences.remove(&'\n');},
                         "undo"        => {undo = true},
                         ""            => {options_end = true;},
                         _ => {
@@ -84,6 +85,7 @@ fn main() -> Result<(), std::io::Error>{
                             'q' => {sequences.remove(&'\"');},
                             'b' => {sequences.remove(&'`');},
                             'a' => {sequences.remove(&'\'');},
+                            'n' => {sequences.remove(&'\n');},
                             'u' => {undo = true},
                             'h' => {print_help().expect("Couldn't write to stdout");},
                             'V' => {writeln!(stdout(), "{}", env!("CARGO_PKG_VERSION")).expect("Couldn't write to stdout"); exit(0);},
@@ -123,6 +125,7 @@ fn print_help() -> Result<(), std::io::Error>{
         writeln!(stdout(), "  {}-u, --undo                    {}Unescapes SEQUENCES.", BOLD, RES)?;
         writeln!(stdout(), "{}{}EXCLUSION OPTIONS:{}", BOLD, UND, RES)?;
         writeln!(stdout(), "  {}-a, --apostrophes             {}Removes apostrophes from escapable character list.", BOLD, RES)?;
+        writeln!(stdout(), "  {}-n, --new-line                {}Removes new lines from escapable character list.", BOLD, RES)?;
         writeln!(stdout(), "  {}-b, --backticks               {}Removes backticks from escapable character list.", BOLD, RES)?;
         writeln!(stdout(), "  {}-q, --quotes                  {}Removes quotation marks from escapable character list.", BOLD, RES)?;
     }else{
@@ -138,6 +141,7 @@ fn print_help() -> Result<(), std::io::Error>{
         writeln!(stdout(), "  -u, --undo                    Unescapes SEQUENCES.")?;
         writeln!(stdout(), "EXCLUSION OPTIONS:")?;
         writeln!(stdout(), "  -a, --apostrophes             Removes apostrophes from escapable character list.")?;
+        writeln!(stdout(), "  -n, --new-line                Removes new lines from escapable character list.")?;
         writeln!(stdout(), "  -b, --backticks               Removes backticks from escapable character list.")?;
         writeln!(stdout(), "  -q, --quotes                  Removes quotation marks from escapable character list.")?;
     }
