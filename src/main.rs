@@ -1,5 +1,5 @@
 use std::{collections::HashMap, process::exit};
-use std::io::{stdout, stdin, Write, IsTerminal, stderr};
+use std::io::{stdout, stdin, Write, IsTerminal, stderr, Read};
 
 fn main() -> Result<(), std::io::Error>{
     let mut sequences: HashMap<char, String> = HashMap::from_iter([
@@ -69,13 +69,12 @@ fn main() -> Result<(), std::io::Error>{
                         writeln!(stderr(), "        echo 'Hello World' | escaper -")?;
                         exit(0);
                     }else {
-                        let lines = stdin().lines();
-                        for line in lines {
-                            if undo {
-                                undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
-                            }else{
-                                escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
-                            }
+                        let mut buf = String::new();
+                        stdin().read_to_string(&mut buf)?;
+                        if undo {
+                            undo_escape_sequence(&buf, &sequences).expect("Couldn't write to stdout");
+                        }else{
+                            escape_sequence(&buf, &sequences).expect("Couldn't write to stdout");
                         }
                     }
                 },
