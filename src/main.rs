@@ -1,7 +1,7 @@
 use std::{collections::HashMap, process::exit};
-use std::io::{stdout, Write, IsTerminal};
+use std::io::{stdout, stdin, Write, IsTerminal, stderr};
 
-fn main() {
+fn main() -> Result<(), std::io::Error>{
     let mut sequences: HashMap<char, String> = HashMap::from_iter([
         (' ', "%20"),
         ('\n',"%0A"),
@@ -64,12 +64,18 @@ fn main() {
                     }
                 },
                 None => {
-                    let lines = std::io::stdin().lines();
-                    for line in lines {
-                        if undo {
-                            undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
-                        }else{
-                            escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                    if stdin().is_terminal(){
+                        writeln!(stderr(), "No input provided.\nExpected usage:")?;
+                        writeln!(stderr(), "        echo 'Hello World' | escaper -")?;
+                        exit(0);
+                    }else {
+                        let lines = stdin().lines();
+                        for line in lines {
+                            if undo {
+                                undo_escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                            }else{
+                                escape_sequence(&line.unwrap(), &sequences).expect("Couldn't write to stdout");
+                            }
                         }
                     }
                 },
@@ -98,6 +104,7 @@ fn main() {
             escape_sequence(i.as_str(), &sequences).expect("Couldn't write to stdout");
         }
     }
+    Ok(())
 }
 
 fn print_help() -> Result<(), std::io::Error>{
