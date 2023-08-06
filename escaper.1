@@ -2,44 +2,43 @@
 .TH ESCAPER "1" "August 2023" "escaper 1.1.0" "User Commands"
 .SH NAME
 escaper \- manual page for escaper 1.1.0
+.SH SYNOPSIS
+.B escaper
+[\fI\,OPTIONS\/\fR] [\fI\,SEQUENCES\/\fR...]
 .SH DESCRIPTION
-\fBEscapes (or unescapes) special character sequences and prints the result to stdout.
-.PP
-\fBUsage:\fB escaper [OPTIONS] [SEQUENCES...]
-.PP
-\fBOPTIONS:
+Escapes (or unescapes) special character sequences and prints the result to stdout.
+.SS "OPTIONS:"
 .TP
-\fB\-h, \fB\-\-help\fR
-Print the help information and exit.
+\fB\-h\fR, \fB\-\-help\fR
+Print the help information and exit.
 .TP
-\fB\-V, \fB\-\-version\fR
-Print version and exit.
+\fB\-V\fR, \fB\-\-version\fR
+Print version and exit.
 .TP
-\fB \-
-Reads SEQUENCES from stdin.
+\-
+Reads SEQUENCES from stdin.
 .TP
-\fB\-\-
-Causes all further arguments to be read as SEQUENCES.
+\fB\-\-\fR
+Causes all further arguments to be read as SEQUENCES.
 .TP
-\fB\-s, \fB\-\-string\fR
-Uses string ($) escape sequences instead of default URL (%) escape sequences.
+\fB\-s\fR, \fB\-\-string\fR
+Uses string ($) escape sequences instead of default URL (%) escape sequences.
 .TP
-\fB\-r, \fB\-\-regex\fR
-Uses shell/regex (\e) escape sequences instead of default URL (%) escape sequences.
+\fB\-r\fR, \fB\-\-regex\fR
+Uses shell/regex (\e) escape sequences instead of default URL (%) escape sequences.
 .TP
-\fB\-u, \fB\-\-undo\fR
-Unescapes SEQUENCES.
-.PP
-\fBEXCLUSION OPTIONS:
+\fB\-u\fR, \fB\-\-undo\fR
+Unescapes SEQUENCES.
+.SS "EXCLUSION OPTIONS:"
 .TP
-\fB\-a, \fB\-\-apostrophes\fR
-Removes apostrophes from escapable character list.
+\fB\-a\fR, \fB\-\-apostrophes\fR
+Removes apostrophes from escapable character list.
 .TP
-\fB\-b, \fB\-\-backticks\fR
-Removes backticks from escapable character list.
+\fB\-b\fR, \fB\-\-backticks\fR
+Removes backticks from escapable character list.
 .TP
-\fB\-q, \fB\-\-quotes\fR
-Removes quotation marks from escapable character list.
+\fB\-q\fR, \fB\-\-quotes\fR
+Removes quotation marks from escapable character list.
 .SH "SEE ALSO"
 The full documentation for
 .B escaper
