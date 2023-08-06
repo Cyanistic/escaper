@@ -43,7 +43,7 @@ fn main() -> Result<(), std::io::Error>{
     let mut options_end = false;
     for i in args.into_iter().skip(1){
         let mut chars = i.chars();
-        if chars.next().is_some_and(|x| x == '-') && !options_end{
+        if chars.next().is_some_and(|x| x == '-') && !options_end {
             match chars.clone().next() {
                 Some('-') => {
                     chars.next();
@@ -146,10 +146,13 @@ fn print_help() -> Result<(), std::io::Error>{
 }
 
 fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<(), std::io::Error>{
-    let mut result = String::new();
-    for i in sequence.chars() {
-        result.push_str(sequences.get(&i).unwrap_or(&i.to_string()));
-    }
+    // OLD METHOD
+    // let mut result = String::new();
+    // for i in sequence.chars() {
+    //     result.push_str(sequences.get(&i).unwrap_or(&i.to_string()));
+    // }
+    //
+    let result = sequence.chars().fold(String::new(), |start, add| start + (sequences.get(&add).unwrap_or(&add.to_string())));
     writeln!(stdout(), "{}", result)?;
     Ok(())
 }
