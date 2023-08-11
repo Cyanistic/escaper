@@ -156,8 +156,7 @@ fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<
     // }
     //
     let result = sequence.chars().fold(String::new(), |start, add| start + (sequences.get(&add).unwrap_or(&add.to_string())));
-    writeln!(stdout(), "{}", result)?;
-    Ok(())
+    writeln!(stdout(), "{}", result)
 }
 
 fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<(), std::io::Error>{
@@ -179,7 +178,6 @@ fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Re
             result.push(val);
         }
     }
-    writeln!(stdout(), "{}", result)?;
-    Ok(())
+    writeln!(stdout(), "{}", result)
 }
 
