@@ -160,24 +160,25 @@ fn escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<
 }
 
 fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Result<(), std::io::Error>{
-    let sequences: HashMap<&String, char> = HashMap::from_iter(sequences.iter().map(|(key, val)| (val, *key)));
+    let sequences: HashMap<&String, &char> = HashMap::from_iter(sequences.iter().map(|(key, val)| (val, key)));
     let mut result = String::new();
     let mut count = 0;
     let start = sequences.keys().next().unwrap().chars().next().unwrap();
-    for (key, val) in sequence.chars().enumerate(){
+    let len = sequences.keys().next().unwrap().chars().count();
+    let sequence = sequence.chars().collect::<Vec<char>>();
+    for (key, val) in sequence.iter().enumerate(){
         if count > 0{
             count -= 1;
             continue;
         }
-        if val != start{
-            result.push(val);
-        }else if let Some(char) = sequences.get(&sequence.chars().skip(key).take(3).collect::<String>()){
-            result.push(*char);
+        if *val != start{
+            result.push(*val);
+        }else if let Some(char) = sequences.get(&sequence[key..key+len].iter().collect::<String>()){
+            result.push(**char);
             count = 2;
         }else{
-            result.push(val);
+            result.push(*val);
         }
     }
     writeln!(stdout(), "{}", result)
 }
-

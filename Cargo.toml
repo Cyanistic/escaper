@@ -4,5 +4,13 @@ version = "1.1.0"
 edition = "2021"
 desciption = "Escapes special character sequences."
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[profile.release]
+lto = true
+debug = true
 
+[dev-dependencies]
+criterion = { version = "0.5.1", features = ["html_reports"] }
+
+[[bench]]
+name = "str_bench"
+harness = false
