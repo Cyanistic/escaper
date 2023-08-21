@@ -5,14 +5,20 @@ I created this to make command line/terminal web scraping easier, especially sin
 ### Usage
 ```
 Escapes (or unescapes) special character sequences and prints the result to stdout.
-Usage: escaper [OPTIONS] [SEQUENCES]
-  -h, --help                    Print the help information.
+
+Usage: escaper [OPTIONS] [SEQUENCES...]
+
+OPTIONS:
+  -h, --help                    Print the help information and exit.
+  -V, --version                 Print version and exit.
    -                            Reads SEQUENCES from stdin.
+  --                            Causes all further arguments to be read as SEQUENCES.
   -s, --string                  Uses string ($) escape sequences instead of default URL (%) escape sequences.
   -r, --regex                   Uses shell/regex (\) escape sequences instead of default URL (%) escape sequences.
   -u, --undo                    Unescapes SEQUENCES.
 EXCLUSION OPTIONS:
   -a, --apostrophes             Removes apostrophes from escapable character list.
+  -n, --new-line                Removes new lines from escapable character list.
   -b, --backticks               Removes backticks from escapable character list.
   -q, --quotes                  Removes quotation marks from escapable character list.
 ```
