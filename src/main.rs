@@ -175,7 +175,7 @@ fn undo_escape_sequence(sequence: &str, sequences: &HashMap<char, String>) -> Re
             result.push(*val);
         }else if let Some(char) = sequences.get(&sequence[key..key+len].iter().collect::<String>()){
             result.push(**char);
-            count = 2;
+            count = len - 1;
         }else{
             result.push(*val);
         }
