@@ -1,15 +1,29 @@
 [package]
-name = "escaper"
-version = "1.2.1"
+authors = ["Cyanism <github@cyan.slmail.me>"]
+description = "Escapes special character sequences."
 edition = "2021"
-desciption = "Escapes special character sequences."
+homepage = "https://github.com/Cyanistic/escaper"
+keywords = ["escape", "string", "special", "character"]
+license = "GPL-3.0"
+name = "escaper"
+readme = "README.md"
+repository = "https://github.com/Cyanistic/escaper"
+version = "1.2.2"
 
 [profile.release]
+opt-level = "z"
+debug = false
 lto = true
-debug = true
+codegen-units = 1
+panic = "abort"
+strip = true
+incremental = false
 
 [dev-dependencies]
 criterion = { version = "0.5.1", features = ["html_reports"] }
+
+[dependencies]
+aho-corasick = "1.1.2"
 
 # [[bench]]
 # name = "str_bench"
