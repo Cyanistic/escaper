@@ -9,44 +9,62 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-latest, windows-latest]
         include:
-          - os: ubuntu-latest
+          - platform: ubuntu-latest
             rust_target: x86_64-unknown-linux-gnu
-          - os: macos-latest
+          - platform: macos-latest
             rust_target: x86_64-apple-darwin
-          - os: macos-latest
+          - platform: macos-latest
             rust_target: aarch64-apple-darwin
-          - os: windows-latest
+          - platform: windows-latest
             rust_target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
       - name: Install Rust (Stable)
-        run:
-          curl https://sh.rustup.rs -sSf | sh -s -- -y
-      - name: Build App
-        run: cargo build -r
+        run: curl https://sh.rustup.rs -sSf | sh -s -- -y
+      - name: Build App (windows)
+        run: |
+          cargo build --release
+          mv ./target/release/escaper.exe "./target/release/escaper-${{ matrix.rust_target }}.exe"
+        if: matrix.platform == 'windows-latest'
+        continue-on-error: true
+      - name: Build App (unix)
+        run: |
+          cargo build --release
+          mv ./target/release/escaper "./target/release/escaper-${{ matrix.rust_target }}"
+        if: matrix.platform != 'windows-latest'
+        continue-on-error: true
+      - name: Run UPX (Windows)
+        uses: crazy-max/ghaction-upx@v3
+        if: matrix.platform != 'macos-latest'
+        with:
+          version: latest
+          files: |
+            ./target/release/escaper-${{ matrix.rust_target }}*
+          args: --best
       - name: Upload Release Assets (windows)
         id: upload-release-asset-windows
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
         if: matrix.platform == 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }}  # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./target/release/escaper.exe
-          asset_name: escaper.exe
-          asset_content_type: application/octet-stream
+          upload_url: ${{ github.event.release.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          draft: false
+          prerelease: false
+          files: |
+            ./target/release/escaper*.exe
       - name: Upload Release Assets (unix)
-        id: upload-release-asset-unix
-        uses: actions/upload-release-asset@v1
+        id: upload-release-unix
+        uses: softprops/action-gh-release@v1
         if: matrix.platform != 'windows-latest'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ github.event.release.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./target/release/escaper
-          asset_name: escaper-${{ matrix.platform }}
-          asset_content_type: application/octet-stream
+          upload_url: ${{ github.event.release.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
+          draft: false
+          prerelease: false
+          files: |
+            ./target/release/escaper-${{ matrix.rust_target }}
